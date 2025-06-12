@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "691104077799",
+    "firebase_url": "https://mobilenetworkapp-af52b-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "mobilenetworkapp-af52b",
+    "storage_bucket": "mobilenetworkapp-af52b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:691104077799:android:de6f593ffb7bc20f594f42",
+        "android_client_info": {
+          "package_name": "com.example.mobilenetworkapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzatpZLlzjs9Dz9AMBEYNfVhLBEvN4CmI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

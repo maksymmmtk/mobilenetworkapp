@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey_background" >
+
+
+    <TextView
+        android:id="@+id/textViewAllTariffs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="32dp"
+        android:fontFamily="@font/montserrat_semibold"
+        android:textSize="25sp"
+        android:text="@string/all_tariffs_title"
+        android:textColor="@color/grey"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+
+    <LinearLayout
+        android:id="@+id/tariffType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAllTariffs" >
+
+        <Button
+            android:id="@+id/prepaidButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="16dp"
+            android:backgroundTint="@color/white"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:fontFamily="@font/montserrat_semibold"
+            android:text="@string/prepaid_title"
+            android:textColor="@color/grey"
+            android:textSize="20sp">
+        </Button>
+
+        <Button
+            android:id="@+id/contractButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="16dp"
+            android:backgroundTint="@color/white"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:fontFamily="@font/montserrat_semibold"
+            android:text="@string/contract_title"
+            android:textColor="@color/grey"
+            android:textSize="20sp">
+        </Button>
+    </LinearLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvTariffs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fillViewport="false"
+        android:overScrollMode="always"
+        app:layout_constraintTop_toBottomOf="@+id/tariffType" >
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_white_border_bottom_bar"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:fontFamily="@font/montserrat_semibold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavigationView"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            app:backgroundTint="@color/white"
+            app:itemPaddingBottom="0dp"
+            app:itemPaddingTop="6dp"
+            app:itemTextAppearanceActive="@style/NavTextStyle"
+            app:itemTextAppearanceInactive="@style/NavTextStyle"
+            app:labelVisibilityMode="labeled"
+            app:itemTextColor="@color/nav_icon_colors"
+            app:itemIconTint="@color/nav_icon_colors"
+            app:menu="@menu/bottom_nav_menu" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

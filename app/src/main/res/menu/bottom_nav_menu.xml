@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_main"
+        android:icon="@drawable/homepage_icon"
+        android:fontFamily="@font/montserrat_medium"
+        android:title="Головна"/>
+    <item
+        android:id="@+id/nav_tariffs"
+        android:icon="@drawable/tariffs_icon"
+        android:fontFamily="@font/montserrat_medium"
+        android:title="Тарифи"/>
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/profile_icon"
+        android:fontFamily="@font/montserrat_medium"
+        android:title="Профіль"/>
+</menu>
