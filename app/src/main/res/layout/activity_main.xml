@@ -251,6 +251,7 @@
                 <LinearLayout
                     android:layout_width="150dp"
                     android:layout_height="match_parent"
+                    android:layout_marginRight="8dp"
                     android:background="@drawable/rounded_white_border"
                     android:gravity="center_horizontal"
                     android:minHeight="180sp"
@@ -271,6 +272,30 @@
                         android:layout_marginTop="8dp"
                         android:fontFamily="@font/montserrat_semibold"
                         android:text="@string/sms_description"
+                        android:textAlignment="center"
+                        android:textColor="@color/purple"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/additionalServiceBlock"
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/rounded_white_border"
+                    android:gravity="center_horizontal"
+                    android:minHeight="180sp"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:visibility="gone"> <!-- спочатку прихований -->
+
+                    <TextView
+                        android:id="@+id/additionalServicesDescription"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/montserrat_semibold"
+                        android:text=""
                         android:textAlignment="center"
                         android:textColor="@color/purple"
                         android:textSize="20sp" />

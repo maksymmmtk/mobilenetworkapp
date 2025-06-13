@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mobilenetworkapp.R;
+import com.example.mobilenetworkapp.models.TariffContract;
 import com.example.mobilenetworkapp.models.TariffPrepaid;
 
 import java.util.List;
@@ -49,20 +50,23 @@ public class TariffAdapter extends RecyclerView.Adapter<TariffAdapter.TariffView
         TariffPrepaid tariff = tariffs.get(position);
         Log.d(TAG, "Binding tariff: " + tariff.getName() + " at position " + position);
 
-        String name = tariff.getName();
-        String price = String.valueOf(tariff.getMonthlyFee());
-        String internetService = tariff.getInternetGigabytesCount() + " ГБ мобільного інтернету";
-        String phoneCallsService = tariff.getCallMinutesCount() + " хв дзвінки на інші мережі";
-        String smsService = tariff.getSmsCount() + " шт SMS по Україні";
+        holder.name.setText(tariff.getName());
+        holder.price.setText(String.valueOf(tariff.getMonthlyFee()));
+        holder.internetService.setText(tariff.getInternetGigabytesCount() + " ГБ мобільного інтернету");
+        holder.phoneCallsService.setText(tariff.getCallMinutesCount() + " хв дзвінки на інші мережі");
+        holder.smsService.setText(tariff.getSmsCount() + " шт SMS по Україні");
 
-        holder.name.setText(name);
-        holder.price.setText(price);
-        holder.internetService.setText(internetService);
-        holder.phoneCallsService.setText(phoneCallsService);
-        holder.smsService.setText(smsService);
+        // Додаткові послуги тільки для TariffContract
+        if (tariff instanceof TariffContract) {
+            String services = ((TariffContract) tariff).getAdditionalServices();
+            holder.additionalServices.setText("Додаткові послуги: " + services);
+            holder.additionalServices.setVisibility(View.VISIBLE);
+        } else {
+            holder.additionalServices.setVisibility(View.GONE);
+        }
 
         holder.chooseButton.setOnClickListener(v -> {
-            Log.d(TAG, "Choose button clicked for tariff: " + name);
+            Log.d(TAG, "Choose button clicked for tariff: " + tariff.getName());
             if (listener != null) {
                 listener.onTariffSelected(tariff);
             } else {
@@ -85,7 +89,7 @@ public class TariffAdapter extends RecyclerView.Adapter<TariffAdapter.TariffView
     }
 
     static class TariffViewHolder extends RecyclerView.ViewHolder {
-        TextView name, price, internetService, phoneCallsService, smsService;
+        TextView name, price, internetService, phoneCallsService, smsService, additionalServices;
         Button chooseButton;
 
         public TariffViewHolder(@NonNull View itemView) {
@@ -95,6 +99,7 @@ public class TariffAdapter extends RecyclerView.Adapter<TariffAdapter.TariffView
             internetService = itemView.findViewById(R.id.internetService);
             phoneCallsService = itemView.findViewById(R.id.phoneCallsService);
             smsService = itemView.findViewById(R.id.smsService);
+            additionalServices = itemView.findViewById(R.id.additionalServices);
             chooseButton = itemView.findViewById(R.id.chooseButton);
             Log.d(TAG, "ViewHolder created");
         }

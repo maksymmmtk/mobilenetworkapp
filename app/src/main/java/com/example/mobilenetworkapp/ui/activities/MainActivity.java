@@ -3,6 +3,7 @@ package com.example.mobilenetworkapp.ui.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mobilenetworkapp.R;
 import com.example.mobilenetworkapp.models.MobileSubscriber;
+import com.example.mobilenetworkapp.models.TariffContract;
 import com.example.mobilenetworkapp.models.TariffPrepaid;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,7 +28,9 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     private BottomNavigationView bottomNavigationView;
-    private TextView userNameTextView, balanceTextView, tariffTextView, priceTextView, internetTextView, phoneCallsTextView, smsTextView;
+    private TextView userNameTextView, balanceTextView, tariffTextView, priceTextView,
+            internetTextView, phoneCallsTextView, smsTextView, additionalServicesTextView;
+    private View additionalServiceBlock;
     private FirebaseUser currentUser;
 
     @Override
@@ -36,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(TAG, "MainActivity створено");
 
+        // Ініціалізація UI
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.nav_main);
         userNameTextView = findViewById(R.id.userNameTextView);
@@ -45,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
         internetTextView = findViewById(R.id.internetDescription);
         phoneCallsTextView = findViewById(R.id.phoneCallsDescription);
         smsTextView = findViewById(R.id.smsDescription);
-
-        Log.d(TAG, "UI елементи ініціалізовано");
+        additionalServicesTextView = findViewById(R.id.additionalServicesDescription);
+        additionalServiceBlock = findViewById(R.id.additionalServiceBlock);
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
@@ -91,16 +96,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot userSnapshot) {
                         if (userSnapshot.exists()) {
-                            Log.d(TAG, "Дані користувача знайдено в базі");
-
                             String surname = userSnapshot.child("surname").getValue(String.class);
                             String name = userSnapshot.child("name").getValue(String.class);
                             String patronymic = userSnapshot.child("patronymic").getValue(String.class);
                             String tariffId = userSnapshot.child("tariffId").getValue(String.class);
                             String connectionDate = userSnapshot.child("connection_date").getValue(String.class);
                             Long balance = userSnapshot.child("balance").getValue(Long.class);
-
-                            Log.d(TAG, "Ім'я: " + name + ", Тариф ID: " + tariffId + ", Баланс: " + balance);
 
                             if (tariffId != null) {
                                 DatabaseReference tariffRef = FirebaseDatabase.getInstance("https://mobilenetworkapp-af52b-default-rtdb.europe-west1.firebasedatabase.app")
@@ -111,23 +112,25 @@ public class MainActivity extends AppCompatActivity {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot tariffSnapshot) {
                                         if (tariffSnapshot.exists()) {
-                                            Log.d(TAG, "Дані тарифу знайдено");
-
                                             String tariffName = tariffSnapshot.child("name").getValue(String.class);
                                             Integer price = tariffSnapshot.child("price").getValue(Integer.class);
                                             Integer internet = tariffSnapshot.child("services").child("0").getValue(Integer.class);
                                             Integer calls = tariffSnapshot.child("services").child("1").getValue(Integer.class);
                                             Integer sms = tariffSnapshot.child("services").child("2").getValue(Integer.class);
+                                            String type = tariffSnapshot.child("type").getValue(String.class);
 
-                                            Log.d(TAG, "Тариф: " + tariffName + ", Ціна: " + price);
-
-                                            TariffPrepaid tariff = new TariffPrepaid(tariffName, price, internet, calls, sms);
+                                            TariffPrepaid tariff;
+                                            if ("contract".equalsIgnoreCase(type)) {
+                                                String additionalServices = tariffSnapshot.child("services").child("3").getValue(String.class);
+                                                tariff = new TariffContract(tariffName, price, internet, calls, sms, additionalServices);
+                                            } else {
+                                                tariff = new TariffPrepaid(tariffName, price, internet, calls, sms);
+                                            }
 
                                             MobileSubscriber subscriber = new MobileSubscriber(
                                                     surname, name, patronymic, phone, tariff, connectionDate
                                             );
 
-                                            // Відображення в UI
                                             userNameTextView.setText(subscriber.getName());
                                             balanceTextView.setText(String.valueOf(balance));
                                             tariffTextView.setText(tariff.getName());
@@ -136,7 +139,15 @@ public class MainActivity extends AppCompatActivity {
                                             phoneCallsTextView.setText(calls + " хв дзвінки на інші мережі");
                                             smsTextView.setText(sms + " шт SMS по Україні");
 
-                                            Log.d(TAG, "Дані успішно відображено в UI");
+                                            if (tariff instanceof TariffContract) {
+                                                String services = ((TariffContract) tariff).getAdditionalServices();
+                                                additionalServicesTextView.setText("Додаткові послуги:\n" + services);
+                                                additionalServiceBlock.setVisibility(View.VISIBLE);
+                                                Log.d(TAG, "Показуємо додаткові послуги: " + services);
+                                            } else {
+                                                additionalServiceBlock.setVisibility(View.GONE);
+                                                Log.d(TAG, "Сховуємо додаткові послуги (не контракт)");
+                                            }
                                         } else {
                                             Log.w(TAG, "Дані тарифу не знайдено");
                                         }
