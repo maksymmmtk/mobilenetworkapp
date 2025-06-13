@@ -64,17 +64,37 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTariffs"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_height="0dp"
+        android:layout_marginVertical="16dp"
         android:fillViewport="false"
         android:overScrollMode="always"
-        app:layout_constraintTop_toBottomOf="@+id/tariffType" >
+        app:layout_constraintTop_toBottomOf="@+id/tariffType"
+        app:layout_constraintBottom_toTopOf="@id/btnExportTariffs"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" >
 
     </androidx.recyclerview.widget.RecyclerView>
 
+    <Button
+        android:id="@+id/btnExportTariffs"
+        android:layout_width="match_parent"
+        android:layout_height="95dp"
+        android:text="Зберегти тарифи"
+        android:layout_margin="16dp"
+        android:fontFamily="@font/montserrat_semibold"
+        android:backgroundTint="@color/purple"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:cornerRadius="16sp"
+        app:layout_constraintBottom_toTopOf="@id/nav"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/nav"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/rounded_white_border_bottom_bar"
         android:orientation="vertical"

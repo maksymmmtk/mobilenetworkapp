@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.mobilenetworkapp"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -40,9 +40,14 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.firebase.inappmessaging)
     implementation(libs.firebase.database)
+    implementation(libs.rules)
+    implementation(libs.espresso.intents)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    androidTestImplementation("org.mockito:mockito-android:5.2.0")
+    implementation("org.apache.poi:poi:5.2.5")
+    implementation("org.apache.poi:poi-ooxml:5.2.5")
 }
 
 apply(plugin = "com.google.gms.google-services")

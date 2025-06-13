@@ -15,7 +15,11 @@ import com.example.mobilenetworkapp.models.TariffPrepaid;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.*;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(TAG, "UI елементи ініціалізовано");
 
-        // 🔽 Перемикання вкладок
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_main) return true;

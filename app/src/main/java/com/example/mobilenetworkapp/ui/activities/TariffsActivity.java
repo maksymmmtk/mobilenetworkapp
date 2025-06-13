@@ -13,15 +13,26 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mobilenetworkapp.R;
+import com.example.mobilenetworkapp.models.MobileSubscriber;
 import com.example.mobilenetworkapp.models.TariffContract;
 import com.example.mobilenetworkapp.models.TariffPrepaid;
 import com.example.mobilenetworkapp.ui.adapters.TariffAdapter;
+import com.example.mobilenetworkapp.utils.ReportUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.*;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class TariffsActivity extends AppCompatActivity {
 
@@ -47,12 +58,10 @@ public class TariffsActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_main) {
-                Log.d(TAG, "Перехід до MainActivity");
                 startActivity(new Intent(this, MainActivity.class));
                 overridePendingTransition(0, 0);
                 return true;
             } else if (itemId == R.id.nav_profile) {
-                Log.d(TAG, "Перехід до ProfileActivity");
                 startActivity(new Intent(this, ProfileActivity.class));
                 overridePendingTransition(0, 0);
                 return true;
@@ -65,25 +74,17 @@ public class TariffsActivity extends AppCompatActivity {
         adapter = new TariffAdapter(tariffList);
         recyclerView.setAdapter(adapter);
 
-        Log.d(TAG, "RecyclerView ініціалізовано");
-
         adapter.setOnTariffSelectListener(tariff -> {
-            Log.d(TAG, "Вибрано тариф: " + tariff.getName());
-
             String phoneNumber = FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
             if (phoneNumber == null) {
-                Log.w(TAG, "Неможливо отримати номер телефону користувача");
                 Toast.makeText(this, "Не вдалося отримати номер телефону користувача", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            Log.d(TAG, "Номер телефону: " + phoneNumber);
 
             usersRef = FirebaseDatabase.getInstance("https://mobilenetworkapp-af52b-default-rtdb.europe-west1.firebasedatabase.app")
                     .getReference("users").child(phoneNumber);
 
             String currentDate = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(new Date());
-            Log.d(TAG, "Дата підключення: " + currentDate);
 
             Map<String, Object> updates = new HashMap<>();
             updates.put("tariffId", tariff.getId());
@@ -91,8 +92,34 @@ public class TariffsActivity extends AppCompatActivity {
 
             usersRef.updateChildren(updates)
                     .addOnSuccessListener(aVoid -> {
-                        Log.d(TAG, "Тариф успішно збережено: " + tariff.getName());
                         Toast.makeText(this, "Тариф \"" + tariff.getName() + "\" обрано!", Toast.LENGTH_SHORT).show();
+
+                        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String surname = snapshot.child("surname").getValue(String.class);
+                                String name = snapshot.child("name").getValue(String.class);
+                                String patronymic = snapshot.child("patronymic").getValue(String.class);
+                                String connectionDate = snapshot.child("connection_date").getValue(String.class);
+
+                                MobileSubscriber subscriber = new MobileSubscriber(
+                                        surname,
+                                        name,
+                                        patronymic,
+                                        phoneNumber,
+                                        tariff,
+                                        connectionDate
+                                );
+
+                                ReportUtils.generateUserReport(TariffsActivity.this, subscriber);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.e(TAG, "Не вдалося завантажити дані користувача: " + error.getMessage());
+                            }
+                        });
+
                         startActivity(new Intent(this, MainActivity.class));
                         finish();
                     })
@@ -106,9 +133,9 @@ public class TariffsActivity extends AppCompatActivity {
 
         Button prepaidButton = findViewById(R.id.prepaidButton);
         Button contractButton = findViewById(R.id.contractButton);
+        Button exportButton = findViewById(R.id.btnExportTariffs);
 
         prepaidButton.setOnClickListener(v -> {
-            Log.d(TAG, "Фільтрація: передплата");
             prepaidButton.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.purple));
             prepaidButton.setTextColor(ContextCompat.getColor(this, R.color.white));
 
@@ -121,12 +148,10 @@ public class TariffsActivity extends AppCompatActivity {
                     filtered.add(tariff);
                 }
             }
-            Log.d(TAG, "Кількість передплатних тарифів: " + filtered.size());
             adapter.updateList(filtered);
         });
 
         contractButton.setOnClickListener(v -> {
-            Log.d(TAG, "Фільтрація: контракт");
             prepaidButton.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.white));
             prepaidButton.setTextColor(ContextCompat.getColor(this, R.color.grey));
 
@@ -139,14 +164,19 @@ public class TariffsActivity extends AppCompatActivity {
                     filtered.add(tariff);
                 }
             }
-            Log.d(TAG, "Кількість контрактних тарифів: " + filtered.size());
             adapter.updateList(filtered);
+        });
+
+        exportButton.setOnClickListener(v -> {
+            if (tariffList.isEmpty()) {
+                Toast.makeText(this, "Список тарифів порожній", Toast.LENGTH_SHORT).show();
+            } else {
+                ReportUtils.generateTariffsReport(this, tariffList);
+            }
         });
     }
 
     private void loadTariffsFromFirebase() {
-        Log.d(TAG, "Завантаження тарифів з Firebase");
-
         tariffsRef = FirebaseDatabase.getInstance("https://mobilenetworkapp-af52b-default-rtdb.europe-west1.firebasedatabase.app")
                 .getReference("tariffs");
 
@@ -180,7 +210,6 @@ public class TariffsActivity extends AppCompatActivity {
                     }
                 }
 
-                Log.d(TAG, "Тарифів завантажено: " + tariffList.size());
                 adapter.updateList(tariffList);
             }
 
